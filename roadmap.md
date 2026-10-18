@@ -1,4 +1,5 @@
 # Smart Student roadmap
+- [ ] Vercel migration: prepare deployment instructions; final connection awaits a user-owned external backend and its Vercel environment settings.
 - [x] Phase 1: design system, public pages, phone auth, full database + RLS, seed data
 - [x] Phase 2: subscription page, payment submission + receipt upload, staff activation
 - [x] Phase 3: Telegram mandatory linking
