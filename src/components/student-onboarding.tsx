@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePreferences } from "@/hooks/use-preferences";
 import { getPushConfig, savePushSubscription } from "@/lib/push.functions";
+import { getActivePushRegistration } from "@/lib/push-client";
 
 type PermissionState = NotificationPermission | "unsupported";
 
@@ -56,7 +57,7 @@ export function StudentOnboarding({ userId }: { userId: string | null }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [permission, setPermission] = useState<PermissionState>("unsupported");
-  const [pushState, setPushState] = useState<"idle" | "enabled" | "error">("idle");
+  const [pushState, setPushState] = useState<"idle" | "connecting" | "enabled" | "error">("idle");
   const [pushError, setPushError] = useState("");
   const getConfig = useServerFn(getPushConfig);
   const saveSubscription = useServerFn(savePushSubscription);
@@ -81,12 +82,14 @@ export function StudentOnboarding({ userId }: { userId: string | null }) {
     }
   }, [getConfig, userId]);
 
-  const current = steps[step] ?? steps[0]!;
+  const current = steps[step] ?? steps[0];
   const permissionGranted = permission === "granted" || permission === "unsupported";
   const isLastStep = step === steps.length - 1;
 
   async function enablePush() {
+    if (pushState === "connecting") return;
     setPushError("");
+    setPushState("connecting");
     try {
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
         throw new Error("This browser does not support device push notifications.");
@@ -95,10 +98,13 @@ export function StudentOnboarding({ userId }: { userId: string | null }) {
         ? "granted"
         : await Notification.requestPermission();
       setPermission(granted);
-      if (granted !== "granted") return;
+      if (granted !== "granted") {
+        setPushState("idle");
+        return;
+      }
       const config = await getConfig();
       if (!config.publicKey) throw new Error("Web Push is not configured on the server yet.");
-      const registration = await navigator.serviceWorker.register("/sw.js");
+      const registration = await getActivePushRegistration();
       const existing = await registration.pushManager.getSubscription();
       const publicKey = config.publicKey.replace(/-/g, "+").replace(/_/g, "/");
       const applicationServerKey = Uint8Array.from(
@@ -171,9 +177,11 @@ export function StudentOnboarding({ userId }: { userId: string | null }) {
                       : "اسمح بإشعارات المتصفح للمتابعة."}
             </p>
             {permission !== "unsupported" && pushState !== "enabled" && (
-              <Button type="button" onClick={enablePush}>
+              <Button type="button" onClick={enablePush} disabled={pushState === "connecting"}>
                 <Bell className="size-4" />
-                {permission === "granted"
+                {pushState === "connecting"
+                  ? english ? "Connecting…" : "جارٍ الربط…"
+                  : permission === "granted"
                   ? english ? "Connect this device" : "ربط هذا الجهاز"
                   : english ? "Enable device notifications" : "تفعيل إشعارات الجهاز"}
               </Button>
