@@ -17,9 +17,9 @@ function b64url(value: Buffer | string) {
 }
 
 function vapidConfig() {
-  const publicKey = process.env.VAPID_PUBLIC_KEY;
-  const privateKey = process.env.VAPID_PRIVATE_KEY;
-  const subject = process.env.VAPID_SUBJECT;
+  const publicKey = process.env["VAPID_PUBLIC_KEY"];
+  const privateKey = process.env["VAPID_PRIVATE_KEY"];
+  const subject = process.env["VAPID_SUBJECT"];
   if (!publicKey || !privateKey || !subject) return null;
   return { publicKey, privateKey, subject };
 }

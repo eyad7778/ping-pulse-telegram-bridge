@@ -113,7 +113,7 @@ export function StudentOnboarding({ userId }: { userId: string | null }) {
       if (!json.keys?.p256dh || !json.keys.auth) throw new Error("Could not read the browser push keys.");
       await saveSubscription({ data: {
         endpoint: subscription.endpoint,
-        keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
+        keys: { p256dh: json.keys["p256dh"], auth: json.keys["auth"] },
       } });
       setPushState("enabled");
     } catch (error) {
