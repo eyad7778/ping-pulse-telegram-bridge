@@ -3,6 +3,8 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Lovable pins its own target internally; this applies to external deployments.
+  nitro: { preset: "vercel" },
   tanstackStart: {
     server: { entry: "server" },
   },

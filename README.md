@@ -15,6 +15,8 @@ Configure the Supabase and Telegram environment variables in the local environme
 
 ## Deployment environment
 
+For moving the existing Lovable Cloud database and accounts to a user-owned backend for Vercel, follow [the Vercel deployment guide](docs/vercel.md). Cloud-managed server keys cannot be copied to an external host.
+
 Set these variables in Vercel:
 
 - `VITE_SUPABASE_URL`

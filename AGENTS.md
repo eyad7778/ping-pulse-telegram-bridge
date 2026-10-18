@@ -6,3 +6,4 @@
 - Subscription status changes happen server-side only; students have no UPDATE grant on subscriptions.
 - The first account to sign up becomes `owner` (handle_new_user trigger); later accounts are `student`.
 - Device push registration uses `src/lib/push-client.ts` to await worker activation before subscription; registration alone can return while the worker is still installing.
+- External deployments target Vercel through the existing Vite wrapper's Nitro option; Lovable keeps its managed deployment override, avoiding duplicate framework plugins.
